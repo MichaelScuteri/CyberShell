@@ -1,40 +1,29 @@
 function GetScheduledTasks { 
 
-    $scheduledtask = Get-ScheduledTask
-    $taskpath = "C:\Windows\System32\Tasks"
+    $ScheduledTask = Get-ScheduledTask
 
-    foreach ($line in $scheduledtask){
+    foreach ($Line in $ScheduledTask){
 
-        $scheduledtaskinfo = $line | Get-ScheduledTaskInfo
+        $ScheduledTaskInfo = $Line | Get-ScheduledTaskInfo
 
-        if ($scheduledtaskinfo.NextRunTime) {
-            $nextruntask = $scheduledtaskinfo.NextRunTime
+        if ($ScheduledTaskInfo.NextRunTime) {
+            $NextRunTask = $ScheduledTaskInfo.NextRunTime
         } else {
-            $nextruntask = "-"
-        }
-
-        try{
-            $fullpath = Join-Path -Path $taskpath -ChildPath "$($line.URI)"
-            $fileinfo = GetFile -Path $fullpath
-           
-        }
-        catch{
-            $fileinfo = "-"
+            $NextRunTask = "-"
         }
 
         $Output = New-Object PSObject -Property @{
-            Name = $scheduledtaskinfo.TaskName
-            File = $fileinfo
-            State = $line.State
+            Name = $ScheduledTaskinfo.TaskName
+            File = $FileInfo
+            State = $Line.State
             Arguments = "-"
-            CreatedBy = $line.Author
-            RunAs = $line.Principal.UserId
-            CreatedTime = $fileinfo.CreatedTime
-            LastRun = $scheduledtaskinfo.LastRunTime
+            CreatedBy = $Line.Author
+            RunAs = $Line.Principal.UserId
+            LastRun = $ScheduledTaskInfo.LastRunTime
             FirstRun = "-"
-            NextRun = $nextruntask
+            NextRun = $NextRunTask
             DeleteAfterRun = "Bool" 
-            } | Select-Object $orderedProperties
+            } 
     Write-Output $Output
     }
 }

@@ -4,43 +4,43 @@ function GetRecentFiles() {
         [String] $Hashtype
     )
 
-    $recentfiles = Get-ChildItem -Path C:\Users\*\AppData\Roaming\Microsoft\Windows\Recent\* 
+    $RecentFiles = Get-ChildItem -Path C:\Users\*\AppData\Roaming\Microsoft\Windows\Recent\* 
 
-    foreach ($files in $recentfiles){
+    foreach ($Files in $RecentFiles){
 
-        $shell = New-Object -ComObject WScript.Shell
-        $shortcut = $shell.CreateShortcut($files.FullName)
+        $Shell = New-Object -ComObject WScript.Shell
+        $Shortcut = $Shell.CreateShortcut($Files.FullName)
 
-        $targetfile = $shortcut.TargetPath
+        $TargetFile = $Shortcut.TargetPath
 
-        if (-not [string]::IsNullOrEmpty($targetfile)) {
-            $targetexists = Test-Path -Path $targetfile -PathType Leaf
+        if (-not [String]::IsNullOrEmpty($TargetFile)) {
+            $TargetExists = Test-Path -Path $TargetFile -PathType Leaf
         } else {
-            $targetfile = "-"
+            $TargetFile = "-"
         }
 
-        if([string]::IsNullOrEmpty($shortcut.Arguments)) {
-            $arguments = "-"
+        if([String]::IsNullOrEmpty($Shortcut.Arguments)) {
+            $Arguments = "-"
         }
         else{
-            $arguments = $shortcut.Arguments
+            $Arguments = $Shortcut.Arguments
         }
 
-        if([string]::IsNullOrEmpty($shortcut.Description)) {
-            $description = "-"
+        if([String]::IsNullOrEmpty($Shortcut.Description)) {
+            $Description = "-"
         }
         else{
-            $description = $shortcut.Description
+            $Description = $Shortcut.Description
         }
 
 
         $Output = New-Object PSObject -Property @{
-            Name = $files.Name
-            Arguments = $arguments
-            Description = $description
-            TargetExists = $targetexists
-            TargetFile = $targetfile
-            WindowStyle = $shortcut.WindowStyle
+            Name = $Files.Name
+            Arguments = $Arguments
+            Description = $Description
+            TargetExists = $Targetexists
+            TargetFile = $TargetFile
+            WindowStyle = $Shortcut.WindowStyle
         }
         Write-Output $Output
     }

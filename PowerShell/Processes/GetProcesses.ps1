@@ -18,50 +18,42 @@ function GetProcesses {
         $ProcessList = Get-WmiObject -Class Win32_Process
     }    
 
-    foreach ($line in $ProcessList){
+    foreach ($Line in $ProcessList){
 
-        $starttime = get-date($line.converttodatetime($line.CreationDate)) -Format "yyyy-mm-dd hh:mm:ss"
+        $StartTime = Get-Date($Line.ConvertToDateTime($Line.CreationDate)) -Format "yyyy-mm-dd hh:mm:ss"
         
-        $ParentProcess = Get-Process -Id $line.ParentProcessId -ErrorAction SilentlyContinue
+        $ParentProcess = Get-Process -Id $Line.ParentProcessId -ErrorAction SilentlyContinue
         $ParentName = if ($ParentProcess) { $ParentProcess.Name } else { "-" }
 
         try {
-            $fileinfo = GetFile -Path $line.FullName 
-        } 
-        catch {
-            $fileinfo = "-"
-        }
-
-        try {
-            $cmdline = $line.CommandLine
+            $CmdLine = $Line.CommandLine
         }
         catch{
-            $cmdline = "-"
+            $CmdLine = "-"
         }
 
-        $GetProcessStatus = Get-Process | Where-Object {$_.id -eq $line.ProcessId}
+        $GetProcessStatus = Get-Process | Where-Object {$_.id -eq $Line.ProcessId}
 
         if ($GetProcessStatus.HasExited){
-            $state = "Exited"
+            $State = "Exited"
         }
         else {
-            $state = "Running"
+            $State = "Running"
         }
 
         $Output = New-Object PSObject -Property @{
-            PID = $line.ProcessId
-            Name = $line.ProcessName
-            CommandLine = $cmdline
+            PID = $Line.ProcessId
+            Name = $Line.ProcessName
+            CommandLine = $CmdLine
             State = $state
-            ParentPID = $line.ParentProcessId
+            ParentPID = $Line.ParentProcessId
             ParentName = $ParentName
-            CreationTime = $starttime
-            Image = $fileinfo.Path
-            MemorySize =  $line.WorkingSetSize
-            HandleCount = $line.HandleCount
+            CreationTime = $StartTime
+            MemorySize =  $Line.WorkingSetSize
+            HandleCount = $Line.HandleCount
             HandleList = "-"
-            ThreadCount = $line.ThreadCount
-            Username = $line.GetOwner().User
+            ThreadCount = $Line.ThreadCount
+            Username = $Line.GetOwner().User
         }
     Write-Output $Output
     }

@@ -1,25 +1,25 @@
-function GetARPCache {
+function GetArpCache {
     
-    $arpcache = arp -a
-    $arplines = $arpcache -split "\r?\n"
+    $ArpCache = Arp -a
+    $ArpLines = $ArpCache -Split "\r?\n"
 
-    $wmiarp = Get-WmiObject -Class Win32_IP4RouteTable
+    $WmiArp = Get-WmiObject -Class Win32_IP4RouteTable
 
-    $pattern = "\b(?<IPAddress>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+(?<MAC>([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2}))\s+(?<Type>\w+)\b"
+    $Pattern = "\b(?<IPAddress>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+(?<MAC>([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2}))\s+(?<Type>\w+)\b"
 
-    foreach ($arp in $arplines){
+    foreach ($Arp in $ArpLines){
 
-        if (-not [string]::IsNullOrWhiteSpace($arp) -and $arp -match $pattern){
-            $IPAddress = $matches["IPAddress"]
-            $Type = $matches["Type"]
-            $MAC = $matches["MAC"]
+        if (-not [String]::IsNullOrWhiteSpace($Arp) -and $Arp -match $Pattern){
+            $IPAddress = $Matches["IPAddress"]
+            $Type = $Matches["Type"]
+            $MAC = $Matches["MAC"]
         }
 
-        $interfaceInfo = $wmiarp | Where-Object { $_.Destination -eq $IPAddress } | Select-Object -First 1
+        $InterfaceInfo = $WmiArp | Where-Object { $_.Destination -eq $IPAddress } | Select-Object -First 1
 
-        $Description = $interfaceInfo.Description
-        $Index = $interfaceInfo.InterfaceIndex
-        $Name = $interfaceInfo.Name
+        $Description = $InterfaceInfo.Description
+        $Index = $InterfaceInfo.InterfaceIndex
+        $Name = $InterfaceInfo.Name
 
 
         $Output = New-Object PSObject -Property @{

@@ -1,7 +1,7 @@
 function GetCommandLineHistory {
 
-    $history = Get-History
-    Write-Output $history
+    $History = Get-History
+    Write-Output $History
 
 }
 

@@ -5,20 +5,20 @@ function GetRegistryKey {
         [String] $Hive
     )
 
-    $path = $Path
-    $splitPath = $Path.Split("\") 
-    $lastIndex = $splitPath.Length - 1
-    $key = $splitPath[-1]
-    $hive = $splitPath[0]
-    $hive = $hive.Replace(":", "")
-    $regpath = $splitpath[0..($lastIndex - 1)] -join "\"
+    $Path = $Path
+    $SplitPath = $Path.Split("\") 
+    $LastIndex = $SplitPath.Length - 1
+    $Key = $SplitPath[-1]
+    $Hive = $SplitPath[0]
+    $Hive = $Hive.Replace(":", "")
+    $RegPath = $SplitPath[0..($LastIndex - 1)] -Join "\"
     
-    $keyvalue = Get-ItemPropertyValue -Path $regpath -Name $key
+    $KeyValue = Get-ItemPropertyValue -Path $RegPath -Name $Key
 
     $Output = New-Object PSObject -Property @{
-        Key = $key
-        Value = $keyvalue
-        Hive = $hive
+        Key = $Key
+        Value = $KeyValue
+        Hive = $Hive
     }
     Write-Output $Output
 

@@ -1,61 +1,56 @@
-function GetDNSCache {
+function GetDnsCache{
 
-    $dnscache = ipconfig /displaydns 
+    $GetDnsCache = Get-DnsClientCache
 
-    foreach ($dns in $dnscache){
+    foreach ($Dns in $GetDnsCache){
 
-        if ($dns -match "Record Name") {
-            $name = $dns.Split(":")[1].Trim()
+        $Name = $Dns.Name
+        $Entry = $Dns.Entry
+        $Type = $Dns.Type
+        $TTL = $Dns.TTL
+        $Section = $Dns.Section
+        $DataLength = $Dns.DataLength
+        $Address = $Dns.Data
+        $Status = $Dns.Status
+
+        $Type = Switch ($Dns.Type) {
+            1 {"A"}
+            2 {"NS"}
+            5 {"CNAME"}
+            6 {"SOA"}
+            12 {"PTR"}
+            15 {"MX"}
+            16 {"TXT"}
+            28 {"AAAA"}
+            Default {"Unknown"}
         }
 
-        if ($dns -match "Section") {
-            $section = $dns.Split(":")[1].Trim()
+        $Section = Switch ($Dns.Section) {
+            1 {"Answer"}
+            2 {"Authority"}
+            3 {"Additional"}
+            default {"Unknown"}
         }
 
-        if ($dns -match "Time To Live") {
-            $TTL = $dns.Split(":")[1].Trim()
+        $Status = Switch ($Dns.Status) {
+            0 {"Success"}
+            1 {"NotExist"}
+            2 {"NoRecords"}
+            Default {"Unknown"}
+
         }
 
-        if ($dns -match "Data Length") {
-            $length = $dns.Split(":")[1].Trim()
+        $Output = New-Object PSObject -Property @{
+            Entry = $Entry
+            RecordName = $Name
+            RecordType = $Type
+            Section = $Section
+            TTL = $TTL
+            DataLength = $DataLength
+            Address = $Address
+            Status = $Status
+            
         }
-
-        if ($dns -match "Time To Live") {
-            $TTL = $dns.Split(":")[1].Trim()
-        }
-
-        if ($dns -match "\S\sRecord") {
-            $address = $dns.Split(":", 2)[1].Trim()
-        }
-        
-        if ($dns -match "Record Type") {
-            $type = $dns.Split(":")[1].Trim()
-
-            $type = switch ($type){
-                1 {"A"}
-                2 {"NS"}
-                5 {"CNAME"}
-                6 {"SOA"}
-                12 {"PTR"}
-                15 {"MX"}
-                16 {"TXT"}
-                28 {"AAAA"}
-                default {"Unknown"}
-            }
-        
-        
-
-            $output = New-Object PSObject -Property @{
-                Entry = $name
-                RecordName = $name
-                RecordType = $type
-                Section = $section
-                TTL = $ttl
-                DataLength = $length
-                Address = $address
-            }
-            Write-Output $output
-        }
+        Write-Output $Output
     }
 }
-

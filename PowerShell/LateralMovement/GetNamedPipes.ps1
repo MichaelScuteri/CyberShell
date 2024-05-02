@@ -1,13 +1,13 @@
 function GetNamedPipes { 
 
-    $pipes = [System.IO.Directory]::GetFiles("\\.\\pipe\\")
+    $Pipes = [System.IO.Directory]::GetFiles("\\.\\pipe\\")
 
 
-    foreach ($line in $pipes){
-        $line = $line.Replace("\\.\\pipe\\", "")
+    foreach ($Line in $Pipes){
+        $Line = $Line.Replace("\\.\\pipe\\", "")
 
         $Output = New-Object PSObject -Property @{
-            Name = $line
+            Name = $Line
             }
             
     Write-Output $Output

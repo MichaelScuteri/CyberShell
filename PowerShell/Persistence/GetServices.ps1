@@ -1,54 +1,29 @@
 function GetServices { 
 
     #$services = Get-Service
-    $win32service = Get-WmiObject -Class Win32_Service
+    $Win32Service = Get-WmiObject -Class Win32_Service
 
-    foreach ($line in $win32service){
+    foreach ($Line in $win32service){
 
-        $ServPath = $line.PathName.Split(' ', 2)
-
-        try{
-            $fileinfo = (GetFile -path $ServPath[0]).Path
-        }
-        catch{
-            $fileinfo = "-"
-        }
-
-        try{
-            $createdtime = (GetFile -path $ServPath[0]).CreatedTime
-        }
-        catch{
-            $createdtime = "-"
-        }
-
-        try{
-            $startedtime = (GetFile -path $ServPath[0]).AccessedTime
-        }
-        catch{
-            $startedtime = "-"
-        }
-
-        if ($line.Startname){
-            $startname = $line.Startname
+        if ($Line.Startname){
+            $StartName = $Line.Startname
         }
         else{
-            $startname = "-"
+            $StartName = "-"
         }
 
-
             $Output = New-Object PSObject -Property @{
-                Name = $line.Name
-                CommandLine = $line.PathName
-                File = $fileinfo
-                State = $line.State
-                Exitcode = $line.Exitcode
-                StartedTime = $startedtime
-                CreatedTime = $createdtime
-                Interactive = $line.DesktopInteract
-                Description = $line.Description
-                PID = $line.ProcessId
-                CreatedBy = $startname
+                Name = $Line.Name
+                CommandLine = $Line.PathName
+                State = $Line.State
+                Exitcode = $Line.Exitcode
+                Interactive = $Line.DesktopInteract
+                Description = $Line.Description
+                PID = $Line.ProcessId
+                CreatedBy = $Startname
             }
+
     Write-Output $Output
+    
     }
 }

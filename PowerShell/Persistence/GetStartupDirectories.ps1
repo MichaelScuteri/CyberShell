@@ -1,67 +1,46 @@
-function GetStartupDirectories() { 
+function GetStartupDirectories { 
 
     Param(
         [String] $Hashtype
     )
 
-    $lnkfiles = Get-ChildItem -Path "C:\Users\*\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup" -Filter *.lnk -Recurse
-    $notlnk = Get-ChildItem -Path "C:\Users\*\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup" -Exclude *.lnk -Recurse
+    $LnkFiles = Get-ChildItem -Path "C:\Users\*\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup" -Filter *.lnk -Recurse
 
-    foreach ($fileinfos in $lnkfiles){
+    foreach ($FileInfo in $LnkFiles){
 
-        $shell = New-Object -ComObject WScript.Shell
-        $shortcut = $shell.CreateShortcut($fileinfos.FullName)
+        $Shell = New-Object -ComObject WScript.Shell
+        $Shortcut = $Shell.CreateShortcut($FileInfo.FullName)
 
-        $targetfile = $shortcut.TargetPath
+        $TargetFile = $Shortcut.TargetPath
 
-        if (-not [string]::IsNullOrEmpty($targetfile)) {
-            $targetexists = Test-Path -Path $targetfile -PathType Leaf
+        if (-not [string]::IsNullOrEmpty($TargetFile)) {
+            $TargetExists = Test-Path -Path $TargetFile -PathType Leaf
         } else {
-            $targetfile = "-"
+            $TargetFile = "-"
         }
 
         if([string]::IsNullOrEmpty($shortcut.Arguments)) {
-            $arguments = "-"
+            $Arguments = "-"
         }
         else{
-            $arguments = $shortcut.Arguments
+            $Arguments = $Shortcut.Arguments
         }
 
-        if([string]::IsNullOrEmpty($shortcut.Description)) {
-            $description = "-"
+        if([string]::IsNullOrEmpty($Shortcut.Description)) {
+            $Description = "-"
         }
         else{
-            $description = $shortcut.Description
+            $Description = $Shortcut.Description
         }
 
         $Output = New-Object PSObject -Property @{
-            Name = $fileinfos.Name
-            Arguments = $arguments
-            Description = $description
-            TargetExists = $targetexists
-            TargetFile = $targetfile
-            WindowStyle = $shortcut.WindowStyle
+            Name = $FileInfo.Name
+            Arguments = $Arguments
+            Description = $Description
+            TargetExists = $TargetExists
+            TargetFile = $TargetFile
+            WindowStyle = $Shortcut.WindowStyle
         }
         Write-Output $Output    
-    }
-
-    foreach ($otherfiles in $notlnk){
-
-        $fileinfo = Get-File -Path $otherfiles
-        
-        $Output = New-Object PSObject -Property @{
-            Name = $fileinfo.Name
-            Path = $fileinfo.Path
-            Hash = $fileinfo.Hash
-            Permissions = $fileinfo.Permissions
-            Owner = $fileinfo.Owner
-            Group = $fileinfo.Group
-            Size = $fileinfo.Size
-            CreatedTime = $fileinfo.CreationTimeUtc.ToString("yyyy-MM-dd HH:mm:ss")
-            AccessedTime = $fileinfo.LastAccessTimeUtc.ToString("yyyy-MM-dd HH:mm:ss")
-            ModifiedTime = $fileinfo.LastWriteTimeUtc.ToString("yyyy-MM-dd HH:mm:ss")
-            VersionInfo = $fileinfo.VersionInfo
-        }
-        Write-Output $Output
     }
 }
