@@ -1,16 +1,20 @@
 function GetProcesses { 
+    [CmdletBinding()]
     param (
-        [int] $ProcessID,
-        [String] $ProcessName,
-        [String] $Hashtype
+        [Int]$ProcessId = 0,
+        [String]$ProcessName = "",
+        [String]$Hashtype = "SHA256"
     )
 
+    #Import GetFile
+    . "C:\Users\micha\OneDrive\Documents\Code\Host-Enumeration\PowerShell\Files\GetFile.ps1"
+
     #if searching by PID
-    if ($ProcessID -ne 0) {
-        $ProcessList = Get-WmiObject -Class Win32_Process -Filter "ProcessId='$ProcessID'"
+    if ($ProcessId -ne 0) {
+        $ProcessList = Get-WmiObject -Class Win32_Process -Filter "ProcessId='$ProcessId'"
     }
     #if searching by process Name
-    if ($ProcessName -ne ""){
+    elseif ($ProcessName -ne ""){
         $ProcessList = Get-WmiObject -Class Win32_Process -Filter "Name='$ProcessName'"
     }
     #return all processes
@@ -19,17 +23,14 @@ function GetProcesses {
     }    
 
     foreach ($Line in $ProcessList){
-
-        $StartTime = Get-Date($Line.ConvertToDateTime($Line.CreationDate)) -Format "yyyy-mm-dd hh:mm:ss"
-        
         $ParentProcess = Get-Process -Id $Line.ParentProcessId -ErrorAction SilentlyContinue
         $ParentName = if ($ParentProcess) { $ParentProcess.Name } else { "-" }
 
         try {
-            $CmdLine = $Line.CommandLine
+            $FileInfo = GetFile -Path $Line.Path -Hashtype $Hashtype 
         }
-        catch{
-            $CmdLine = "-"
+        catch {
+            $FileInfo = "-"
         }
 
         $GetProcessStatus = Get-Process | Where-Object {$_.id -eq $Line.ProcessId}
@@ -44,17 +45,29 @@ function GetProcesses {
         $Output = New-Object PSObject -Property @{
             PID = $Line.ProcessId
             Name = $Line.ProcessName
-            CommandLine = $CmdLine
-            State = $state
+            Path = $Line.Path
+            CommandLine = $Line.CommandLine
+            State = $State
             ParentPID = $Line.ParentProcessId
             ParentName = $ParentName
-            CreationTime = $StartTime
+            CreationTime = $FileInfo.CreatedTime
+            ModifiedTime = $FileInfo.ModifiedTime
+            AccessedTime = $FileInfo.AccessedTime
             MemorySize =  $Line.WorkingSetSize
             HandleCount = $Line.HandleCount
-            HandleList = "-"
             ThreadCount = $Line.ThreadCount
             Username = $Line.GetOwner().User
+            Hash = $FileInfo.Hash.Value
+            HashType = $FileInfo.Hash.Type
+        }
+
+        foreach ($Property in $Output.PsObject.Properties){
+            if(($null -eq $Property.Value) -or ($Property.Value -eq "")){
+                $Property.Value = "-"
+            }
         }
     Write-Output $Output
     }
 }
+
+GetProcesses @args

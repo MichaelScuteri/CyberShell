@@ -62,18 +62,24 @@ function GetCustomLogs() {
             ActivityID = $Log.ActivityID
             KeywordDisplayName = $Log.KeywordsDisplayNames
         }
-    Write-Output $Output
-    $OutputCount += 1
-    }
+
+        #Loop through each property and replace null values with "-"
+        foreach ($Property in $Output.PsObject.Properties){
+            if(($null -eq $Property.Value) -or ($Property.Value -eq "")){
+                $Property.Value = "-"
+            }
+
+        Write-Output $Output
+        $OutputCount += 1
+
+        }
 
     if ($OutputCount -eq 0){
         Write-Host "No Events Found"
     }
 }
+}
 function ShowHelp() {
-    Write-Host "Synopsis:"
-    Write-Host "`tDesigned to retrieve custom event logs based on specified parameters."
-    Write-Host ""
     Write-Host "Description:"
     Write-Host "`tDesigned to retrieve custom event logs based on specified parameters such as log name, 
     path, event IDs, and time range. It utilizes Get-WinEvent cmdlet to filter event logs and presents 
@@ -85,3 +91,5 @@ function ShowHelp() {
     Write-Host "Example Usage:"
     Write-Host "`tGetCustomLogs -LogName 'Application' -EventIDs 1001,1002 -StartTime '20/04/2024 12:00:00 AM' -EndTime '21/04/2024 12:00:00 AM'"
 }
+
+GetCustomLogs @args

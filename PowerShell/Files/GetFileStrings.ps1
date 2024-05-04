@@ -21,7 +21,7 @@ function GetFileStrings {
         write-host $strings.Length
     }
     #Search for MatchString if provided
-    if ($MatchString -ne "") {
+    elseif ($MatchString -ne "") {
         $strings = $content | Select-String -Pattern $MatchString -AllMatches | ForEach-Object { $_.Matches.Value }
         if (-not $strings) {
             return "'$MatchString' not found in the file."

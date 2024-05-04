@@ -1,9 +1,18 @@
 function GetDomainUsers(){
 
+    <#
+    Example Usage:
+    GetDomainUser
+    #>
+    [CmdletBinding()]
+    Param ()
+    begin {
+    
+    #Command to get all domain users
     $Users = Get-ADUser -Identity * -Property *
 
+    #Loop through each user and get specified  information
     foreach ($User in $Users){
-
         $AccountName = $User.SamAccountName
         $SID = $User.SID
         $CreatedTime = $User.whenCreated
@@ -29,7 +38,6 @@ function GetDomainUsers(){
         $Certificates = $User.Certificates 
 
         $Output = New-Object PSObject -Property @{
-
            AccountName = $AccountName
            SID = $SID
            CreatedTime = $CreatedTime
@@ -53,9 +61,15 @@ function GetDomainUsers(){
            PrimaryGroup = $PrimaryGroup
            MemberOf = $MemberOf
            Certificates = $Certificates
+        }
 
+        #Loop through all properties and remove $null and empty values
+        foreach ($Property in $ADComputer.PsObject.Properties){
+            if(($null -eq $Property.Value) -or ($Property.Value -eq "")){
+                $Property.Value = "-"
+            }
         }
         Write-Output $Output
     }
-
+}
 }
