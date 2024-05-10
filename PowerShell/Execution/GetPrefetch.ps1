@@ -4,18 +4,19 @@ function GetPrefetch() {
         [String] $Hashtype
     )
 
+    #Import GetFile
+    . "C:\Users\micha\OneDrive\Documents\Code\Host-Enumeration\PowerShell\Files\GetFile.ps1"
+
     #Get Prefetch path and filter for .pf files
     $PrefetchPath = Get-ChildItem -Path C:\Windows\Prefetch -Recurse -Filter *.pf
 
     foreach ($File in $PrefetchPath){
-        $FileInfo = GetFile -path $file.FullName
+        $FileInfo = GetFile -Path $File.FullName
         $Name = $File.BaseName
-        $Hash = Get-FileHash $Name 
 
         $Output = New-Object PSObject -Property @{
-            PrefetchName = $Name
-            PrefetchHash = $Hash
-            LastExecuted = $FileInfo
+            Name = $Name
+            FileInfo = $FileInfo
         }
         
         #Loop through each property and replace null values with "-"
@@ -27,3 +28,5 @@ function GetPrefetch() {
     }
 }
 }
+
+GetPrefetch @args

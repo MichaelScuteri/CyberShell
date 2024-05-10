@@ -1,25 +1,29 @@
-function GetRegistryKey {
-    
+function GetRegistryKeys {
     param (
-        [String] $Path,
-        [String] $Hive
+        [string]$Path
     )
 
-    $Path = $Path
-    $SplitPath = $Path.Split("\") 
-    $LastIndex = $SplitPath.Length - 1
-    $Key = $SplitPath[-1]
-    $Hive = $SplitPath[0]
-    $Hive = $Hive.Replace(":", "")
-    $RegPath = $SplitPath[0..($LastIndex - 1)] -Join "\"
+    #Get all keys and values at the current path
+    $Location = Get-Item -Path $Path
+    $Values = $Location.GetValueNames()
     
-    $KeyValue = Get-ItemPropertyValue -Path $RegPath -Name $Key
-
-    $Output = New-Object PSObject -Property @{
-        Key = $Key
-        Value = $KeyValue
-        Hive = $Hive
-    }
+    # Output values at the current path
+    foreach ($Key in $Values) {
+        $Data = $Location.GetValue($Key)
+    
+        $Output = New-Object PSObject -Property @{
+            Key = $Key
+            Value = $Data
+        }
     Write-Output $Output
+    }
 
+    #Get all subkeys and call the function recursively
+    $SubKeys = $Location.GetSubKeyNames()
+    foreach ($SubKey in $SubKeys) {
+        $SubPath = "$Path\$SubKey"
+        GetRegistryKeys -Path $SubPath
+    }
 }
+
+GetRegistryKeys @args

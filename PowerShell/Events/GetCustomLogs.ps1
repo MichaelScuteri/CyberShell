@@ -7,9 +7,10 @@ function GetCustomLogs() {
         [Int] $EventIDs,
         [String] $StartTime,
         [String] $EndTime,
-        [Int] $MaxEvents = 2000,
+        [Int] $MaxEvents = 100,
         [Switch]$Help
     )
+    begin {
 
     #Start counter for events, to check if no events are found
     $OutputCount = 0
@@ -77,6 +78,7 @@ function GetCustomLogs() {
     if ($OutputCount -eq 0){
         Write-Host "No Events Found"
     }
+}
 }
 }
 function ShowHelp() {
