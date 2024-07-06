@@ -61,3 +61,5 @@ function GetNetStat {
         Write-Output $Output
     }
 }
+
+GetNetStat

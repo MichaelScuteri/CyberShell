@@ -7,7 +7,7 @@ function GetProcesses {
     )
 
     #Import GetFile
-    . "C:\Users\micha\OneDrive\Documents\Code\Host-Enumeration\PowerShell\Files\GetFile.ps1"
+    . "C:\Users\micha\OneDrive\Documents\Code\PowerShell\Host-Enumeration\PowerShell\Files\GetFile.ps1"
 
     #if searching by PID
     if ($ProcessId -ne 0) {

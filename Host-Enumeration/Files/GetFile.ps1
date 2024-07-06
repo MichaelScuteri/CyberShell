@@ -4,7 +4,7 @@ function GetFile () {
         [String] $HashType
     )
 
-    . "C:\Users\micha\OneDrive\Documents\Code\Host-Enumeration\PowerShell\Files\GetHash.ps1"
+    . "C:\Users\micha\OneDrive\Documents\Code\PowerShell\Host-Enumeration\PowerShell\Files\GetHash.ps1"
 
     if (Test-Path($Path)) {
         $File = Get-Item -Force -Path $Path

@@ -57,3 +57,4 @@ function GetDnsCache_Legacy {
     }
 }
 
+GetDnsCache_Legacy

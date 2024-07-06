@@ -7,7 +7,7 @@ function GetRegistryKeys {
     $Location = Get-Item -Path $Path
     $Values = $Location.GetValueNames()
     
-    # Output values at the current path
+    #Output values at the current path
     foreach ($Key in $Values) {
         $Data = $Location.GetValue($Key)
     
@@ -17,7 +17,7 @@ function GetRegistryKeys {
         }
     Write-Output $Output
     }
-
+    
     #Get all subkeys and call the function recursively
     $SubKeys = $Location.GetSubKeyNames()
     foreach ($SubKey in $SubKeys) {

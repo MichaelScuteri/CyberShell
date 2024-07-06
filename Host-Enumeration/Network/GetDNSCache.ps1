@@ -54,3 +54,5 @@ function GetDnsCache{
         Write-Output $Output
     }
 }
+
+GetDnsCache

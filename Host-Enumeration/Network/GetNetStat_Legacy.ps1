@@ -15,6 +15,8 @@ function GetNetStat_Legacy {
             $RemotePort = $Match.Groups['RemotePort'].Value
             $State = $Match.Groups['State'].Value
             $ProcID = $Match.Groups['Pid'].Value
+
+            $ProcName = Get-Process -ID $ProcID
     
             if ($RemotePort -And $RemoteAddress -eq "*"){
                 $RemoteAddress = $RemoteAddress -Replace ('\*','-')
@@ -24,7 +26,7 @@ function GetNetStat_Legacy {
             if ($State -eq ''){
                 $State = $State -Replace ('','-')
             }
-
+    
             $Output = New-Object PSObject -Property @{
                 Protocol = $Protocol
                 LocalAddress = $LocalAddress
@@ -33,8 +35,11 @@ function GetNetStat_Legacy {
                 RemotePort = $RemotePort
                 State = $State
                 PID = $ProcID
+                Process = $ProcName.ProcessName
             }   
             Write-Output $Output
         }
     }
 }
+
+GetNetStat_Legacy
